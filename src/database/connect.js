@@ -5,7 +5,7 @@ async function connect() {
   mongoose.set('strictQuery', false);
 
   console.log(chalk.blue(chalk.bold(`Database`)), (chalk.white(`>>`)), chalk.red(`MongoDB`), chalk.green(`is connecting...`))
-  await mongoose.connect(process.env.MONGO_TOKEN, {
+ await mongoose.connect(process.env.MONGO_TOKEN || process.env.MONGO_URI || process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then(() => {
