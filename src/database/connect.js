@@ -6,8 +6,8 @@ async function connect() {
 
   console.log(chalk.blue(chalk.bold(`Database`)), (chalk.white(`>>`)), chalk.red(`MongoDB`), chalk.green(`is connecting...`))
   
-  // Tera username pre-filled hai. Bas <password> ki jagah apna password daal de!
-  const mongoUri = "mongodb+srv://sksidhkataria_db_user:VonBotPass123@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority";
+  // Tera exact connection string yahan daal diya hai
+  const mongoUri = "mongodb+srv://sksidhkataria_db_user:VonBotPass123@cluster0.hvtszvr.mongodb.net/?retryWrites=true&w=majority";
 
   await mongoose.connect(mongoUri, {
     useNewUrlParser: true,
