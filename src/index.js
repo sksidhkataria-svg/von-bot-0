@@ -1,7 +1,7 @@
 const app = require("express")();
 const Discord = require('discord.js');
 const chalk = require('chalk');
-require('dotenv').config('./.env');
+require('dotenv').config();
 const axios = require('axios');
 const webhook = require("./config/webhooks.json");
 const config = require("./config/bot.js");
