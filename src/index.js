@@ -34,58 +34,44 @@ app.listen(PORT, () => console.log(chalk.blue(chalk.bold(`Server`)), (chalk.whit
 
 require('./bot')
 
-// Webhooks
-const consoleLogs = new Discord.WebhookClient({
-    id: webhook.consoleLogs.id,
-    token: webhook.consoleLogs.token,
-});
+// Safe Webhooks initialization to prevent crashes if tokens are missing
+const consoleLogs = (webhook.consoleLogs?.id && webhook.consoleLogs?.token) 
+    ? new Discord.WebhookClient({ id: webhook.consoleLogs.id, token: webhook.consoleLogs.token })
+    : null;
 
-const warnLogs = new Discord.WebhookClient({
-    id: webhook.warnLogs.id,
-    token: webhook.warnLogs.token,
-});
+const warnLogs = (webhook.warnLogs?.id && webhook.warnLogs?.token)
+    ? new Discord.WebhookClient({ id: webhook.warnLogs.id, token: webhook.warnLogs.token })
+    : null;
 
 process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
-    if (error) if (error.length > 950) error = error.slice(0, 950) + '... view console for details';
-    if (error.stack) if (error.stack.length > 950) error.stack = error.stack.slice(0, 950) + '... view console for details';
-    if (!error.stack) return
-    const embed = new Discord.EmbedBuilder()
-        .setTitle(`🚨・Unhandled promise rejection`)
-        .addFields([
-            {
-                name: "Error",
-                value: error ? Discord.codeBlock(error) : "No error",
-            },
-            {
-                name: "Stack error",
-                value: error.stack ? Discord.codeBlock(error.stack) : "No stack error",
-            }
-        ])
-    consoleLogs.send({
-        username: 'Bot Logs',
-        embeds: [embed],
-    }).catch(() => {
-        console.log('Error sending unhandled promise rejection to webhook')
-        console.log(error)
-    })
+    if (!consoleLogs) return;
+    
+    try {
+        let errStr = error ? String(error) : "No error";
+        if (errStr.length > 950) errStr = errStr.slice(0, 950) + '...';
+        
+        const embed = new Discord.EmbedBuilder()
+            .setTitle(`🚨・Unhandled promise rejection`)
+            .addFields([{ name: "Error", value: Discord.codeBlock(errStr) }]);
+
+        consoleLogs.send({ username: 'Bot Logs', embeds: [embed] }).catch(() => {});
+    } catch (e) {
+        console.log('Webhook logging skipped.');
+    }
 });
 
 process.on('warning', warn => {
     console.warn("Warning:", warn);
-    const embed = new Discord.EmbedBuilder()
-        .setTitle(`🚨・New warning found`)
-        .addFields([
-            {
-                name: `Warn`,
-                value: `\`\`\`${warn}\`\`\``,
-            },
-        ])
-    warnLogs.send({
-        username: 'Bot Logs',
-        embeds: [embed],
-    }).catch(() => {
-        console.log('Error sending warning to webhook')
-        console.log(warn)
-    })
+    if (!warnLogs) return;
+
+    try {
+        const embed = new Discord.EmbedBuilder()
+            .setTitle(`🚨・New warning found`)
+            .addFields([{ name: `Warn`, value: `\`\`\`${warn}\`\`\`` }]);
+
+        warnLogs.send({ username: 'Bot Logs', embeds: [embed] }).catch(() => {});
+    } catch (e) {
+        console.log('Webhook warning skipped.');
+    }
 });
