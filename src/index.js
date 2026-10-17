@@ -2,6 +2,10 @@ const app = require("express")();
 const Discord = require('discord.js');
 const chalk = require('chalk');
 require('dotenv').config();
+
+// Auto-fix for MongoDB variable mismatch between Railway and Bot code
+process.env.MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || process.env.MONGODB_URI;
+
 const axios = require('axios');
 const webhook = require("./config/webhooks.json");
 const config = require("./config/bot.js");
@@ -24,7 +28,7 @@ app.get("/", (req, res) => {
     res.end()
 });
 
-// MODIFIED FOR RENDER: Uses Render's dynamic port or falls back to 3000
+// MODIFIED FOR RENDER/RAILWAY: Uses dynamic port or falls back to 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(chalk.blue(chalk.bold(`Server`)), (chalk.white(`>>`)), (chalk.green(`Running on port`)), (chalk.red(PORT))))
 
