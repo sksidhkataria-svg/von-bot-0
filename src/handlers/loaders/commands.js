@@ -3,18 +3,19 @@ const { REST } = require('discord.js');
 const { Routes } = require('discord.js');
 const chalk = require('chalk');
 const fs = require('fs');
-const { ApplicationCommand } = require('discord.js');
 
 /**@param {Discord.Client} client */
 module.exports = (client) => {
-    const interactionLogs = new Discord.WebhookClient({
-        id: client.webhooks.interactionLogs.id,
-        token: client.webhooks.interactionLogs.token,
-    });
+    // Safe Webhook initialization to prevent crashes if tokens are missing
+    const interactionLogs = (client.webhooks?.interactionLogs?.id && client.webhooks?.interactionLogs?.token)
+        ? new Discord.WebhookClient({
+            id: client.webhooks.interactionLogs.id,
+            token: client.webhooks.interactionLogs.token,
+          })
+        : null;
 
     const commands = [];
     console.log(chalk.blue(chalk.bold(`System`)), (chalk.white(`>>`)), (chalk.green(`Loading commands`)), (chalk.white(`...`)))
-
 
     fs.readdirSync('./src/interactions').forEach(dirs => {
         const commandFiles = fs.readdirSync(`./src/interactions/${dirs}`).filter(files => files.endsWith('.js'));
@@ -32,31 +33,33 @@ module.exports = (client) => {
 
     (async () => {
         try {
-            const embed = new Discord.EmbedBuilder()
-                .setDescription(`Started refreshing application (/) commands.`)
-                .setColor(client.config.colors.normal)
-            interactionLogs.send({
-                username: 'Bot Logs',
-                embeds: [embed]
-            });
+            if (interactionLogs) {
+                const embed = new Discord.EmbedBuilder()
+                    .setDescription(`Started refreshing application (/) commands.`)
+                    .setColor(client.config.colors.normal)
+                interactionLogs.send({
+                    username: 'Bot Logs',
+                    embeds: [embed]
+                }).catch(() => {});
+            }
 
             await rest.put(
                 Routes.applicationCommands(client.config.discord.id),
                 { body: commands },
             )
 
-            const embedFinal = new Discord.EmbedBuilder()
-                .setDescription(`Successfully reloaded ${commands.length} application (/) commands.`)
-                .setColor(client.config.colors.normal)
-            interactionLogs.send({
-                username: 'Bot Logs',
-                embeds: [embedFinal]
-            });
-
+            if (interactionLogs) {
+                const embedFinal = new Discord.EmbedBuilder()
+                    .setDescription(`Successfully reloaded ${commands.length} application (/) commands.`)
+                    .setColor(client.config.colors.normal)
+                interactionLogs.send({
+                    username: 'Bot Logs',
+                    embeds: [embedFinal]
+                }).catch(() => {});
+            }
 
         } catch (error) {
             console.log(error);
         }
     })();
 }
-
