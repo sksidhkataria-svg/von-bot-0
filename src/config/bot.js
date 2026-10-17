@@ -9,7 +9,7 @@ module.exports = {
 
     discord: {
         id: "1560956552519622798",
-        prefix: '!',
+        prefix: '.',
         footer: `2021 - ${new Date().getFullYear()}`, 
         botInvite: `https://discord.com/oauth2/authorize?&client_id=840212110817755157&scope=applications.commands+bot&permissions=8`,
         serverInvite: "https://discord.gg/qHXxpQKC2H",
