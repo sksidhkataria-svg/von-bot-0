@@ -23,7 +23,11 @@ app.get("/", (req, res) => {
     res.send(`<iframe style="margin: 0; padding: 0;" width="100%" height="100%" src="https://uoaio.vercel.app/" frameborder="0" allowfullscreen></iframe>`);
     res.end()
 });
-app.listen(3000, () => console.log(chalk.blue(chalk.bold(`Server`)), (chalk.white(`>>`)), (chalk.green(`Running on`)), (chalk.red(`3000`))))
+
+// MODIFIED FOR RENDER: Uses Render's dynamic port or falls back to 3000
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(chalk.blue(chalk.bold(`Server`)), (chalk.white(`>>`)), (chalk.green(`Running on port`)), (chalk.red(PORT))))
+
 require('./bot')
 
 // Webhooks
