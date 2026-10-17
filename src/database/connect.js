@@ -5,7 +5,11 @@ async function connect() {
   mongoose.set('strictQuery', false);
 
   console.log(chalk.blue(chalk.bold(`Database`)), (chalk.white(`>>`)), chalk.red(`MongoDB`), chalk.green(`is connecting...`))
- await mongoose.connect(process.env.MONGO_TOKEN || process.env.MONGO_URI || process.env.MONGO_URL, {
+  
+  // DIRECT CONNECTION FIX: Apna Atlas connection URL yahan quotes ke andar seedha daal sakte ho agar environment variable issue de
+  const mongoUri = process.env.MONGO_URI || process.env.MONGO_URL || process.env.MONGODB_URI;
+
+  await mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then(() => {
