@@ -6,8 +6,8 @@ async function connect() {
 
   console.log(chalk.blue(chalk.bold(`Database`)), (chalk.white(`>>`)), chalk.red(`MongoDB`), chalk.green(`is connecting...`))
   
-  // DIRECT CONNECTION FIX: Apna Atlas connection URL yahan quotes ke andar seedha daal sakte ho agar environment variable issue de
-  const mongoUri = process.env.MONGO_URI || process.env.MONGO_URL || process.env.MONGODB_URI;
+  // Tera username pre-filled hai. Bas <password> ki jagah apna password daal de!
+  const mongoUri = "mongodb+srv://sksidhkataria_db_user:VonBotPass123@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority";
 
   await mongoose.connect(mongoUri, {
     useNewUrlParser: true,
